@@ -1,13 +1,18 @@
-CFLAGS = -std=c++17 -O2
+CFLAGS = -std=c++17
+RELFLAGS = -Ofast
+DBGFLAGS = -Og -ggdb3
 LDFLAGS = -lglfw -lvulkan -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
-VulkanTest: main.cpp
-	g++ $(CFLAGS) -o VulkanTest main.cpp $(LDFLAGS)
+debug: main.cpp
+	g++ $(CFLAGS) $(DBGFLAGS) -o VulkanTest main.cpp $(LDFLAGS)
 
-.PHONY: test clean
+release: main.cpp
+	g++ $(CFLAGS) $(RELFLAGS) -o VulkanTest main.cpp $(LDFLAGS)
 
-test: VulkanTest
+test: debug
 	./VulkanTest
 
 clean:
 	rm -f VulkanTest
+
+.PHONY: test clean release debug
