@@ -1,5 +1,5 @@
 CFLAGS = -std=c++17
-RELFLAGS = -Ofast
+RELFLAGS = -Ofast -DNDEBUG
 DBGFLAGS = -Og -ggdb3
 LDFLAGS = -lglfw -lvulkan -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
