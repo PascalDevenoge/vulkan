@@ -15,4 +15,4 @@ test: debug
 clean:
 	rm -f VulkanTest
 
-.PHONY: test clean release debug
+.PHONY: test clean
