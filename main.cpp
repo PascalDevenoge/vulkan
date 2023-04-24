@@ -91,6 +91,9 @@ private:
   VkRenderPass renderPass;
   VkPipeline graphicsPipeline;
 
+  VkCommandPool commandPool;
+  VkCommandBuffer commandBuffer;
+
   VkInstance instance;
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
   VkDevice device;
@@ -700,23 +703,89 @@ private:
     swapChainFramebuffers.resize(swapChainImageViews.size());
 
     for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-      VkImageView attachments[] = {
-        swapChainImageViews[i]
-      };
+      VkImageView attachments[] = {swapChainImageViews[i]};
 
       VkFramebufferCreateInfo framebufferInfo{
-        .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-        .renderPass = renderPass,
-        .attachmentCount = 1,
-        .pAttachments = attachments,
-        .width = swapChainExtent.width,
-        .height = swapChainExtent.height,
-        .layers = 1,
+          .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+          .renderPass = renderPass,
+          .attachmentCount = 1,
+          .pAttachments = attachments,
+          .width = swapChainExtent.width,
+          .height = swapChainExtent.height,
+          .layers = 1,
       };
 
-      if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
+      if (vkCreateFramebuffer(device, &framebufferInfo, nullptr,
+                              &swapChainFramebuffers[i]) != VK_SUCCESS) {
         throw std::runtime_error("Could not create framebuffer");
       }
+    }
+  }
+
+  void createCommandPool() {
+    QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
+
+    VkCommandPoolCreateInfo poolInfo{
+        .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+        .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+        .queueFamilyIndex = queueFamilyIndices.graphicsFamily.value(),
+    };
+
+    if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("Could not create graphics command pool");
+    }
+  }
+
+  void createCommandBuffer() {
+    VkCommandBufferAllocateInfo allocInfo{
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+        .commandPool = commandPool,
+        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+        .commandBufferCount = 1,
+    };
+
+    if (vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("Could not allocate graphics command buffer");
+    }
+  }
+
+  void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
+    VkCommandBufferBeginInfo beginInfo{
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        .flags = 0,
+        .pInheritanceInfo = nullptr,
+    };
+
+    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+      throw std::runtime_error("Could not begin recording command buffer");
+    }
+
+    VkClearValue clearColor = {{{0.f, 0.f, 0.f, 1.f}}};
+
+    VkRenderPassBeginInfo renderPassInfo{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = renderPass,
+        .framebuffer = swapChainFramebuffers[imageIndex],
+        .renderArea =
+            {
+                .offset = {0, 0},
+                .extent = swapChainExtent,
+            },
+        .clearValueCount = 1,
+        .pClearValues = &clearColor,
+    };
+
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo,
+                         VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                      graphicsPipeline);
+    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+    vkCmdEndRenderPass(commandBuffer);
+
+    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+      throw std::runtime_error("Failed to record command buffer");
     }
   }
 
@@ -731,6 +800,8 @@ private:
     createRenderPass();
     createGraphicsPipeline();
     createFramebuffers();
+    createCommandPool();
+    createCommandBuffer();
   }
 
   void mainLoop() {
@@ -744,6 +815,7 @@ private:
   }
 
   void cleanup() {
+    vkDestroyCommandPool(device, commandPool, nullptr);
     for (auto framebuffer : swapChainFramebuffers) {
       vkDestroyFramebuffer(device, framebuffer, nullptr);
     }
