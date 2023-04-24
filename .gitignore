@@ -1,3 +1,4 @@
 .vscode
 .vscode/*
 VulkanTest
+shaders/*.spv

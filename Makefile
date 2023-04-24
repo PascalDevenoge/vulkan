@@ -1,18 +1,19 @@
-CFLAGS = -std=c++17
-RELFLAGS = -Ofast -DNDEBUG
-DBGFLAGS = -Og -ggdb3
+CFLAGS = -std=c++20 -Og -ggdb3
 LDFLAGS = -lglfw -lvulkan -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
-debug: main.cpp
+shaders = shaders/vert.spv shaders/frag.spv
+
+VulkanTest: $(shaders) main.cpp
 	g++ $(CFLAGS) $(DBGFLAGS) -o VulkanTest main.cpp $(LDFLAGS)
 
-release: main.cpp
-	g++ $(CFLAGS) $(RELFLAGS) -o VulkanTest main.cpp $(LDFLAGS)
+%.spv: ./shaders/shader.vert ./shaders/shader.frag
+	glslc ./shaders/shader.vert -o ./shaders/vert.spv
+	glslc ./shaders/shader.frag -o ./shaders/frag.spv
 
-test: debug
+test: VulkanTest
 	./VulkanTest
 
 clean:
-	rm -f VulkanTest
+	rm -f VulkanTest ./shaders/*.spv
 
 .PHONY: test clean
