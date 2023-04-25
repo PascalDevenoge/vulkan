@@ -13,6 +13,8 @@
 #include <stdexcept>
 #include <vector>
 
+// #define FULLSCREEN
+
 constexpr inline int MAX_FRAMES_IN_FLIGHT = 2;
 constexpr inline int WIDTH = 800;
 constexpr inline int HEIGHT = 600;
@@ -136,7 +138,14 @@ private:
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+#ifdef FULLSCREEN
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    int width, height;
+    glfwGetMonitorWorkarea(monitor, nullptr, nullptr, &width, &height);
+    window = glfwCreateWindow(width, height, "Vulkan", monitor, nullptr);
+#else
     window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+#endif
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
   }
