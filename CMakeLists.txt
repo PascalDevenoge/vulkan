@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.26)
 
 project(vulkan_tutorial VERSION 0.1.0 LANGUAGES CXX)
 
@@ -37,12 +37,12 @@ add_custom_target(binaryShaders ALL DEPENDS ${SPV_SHADERS})
 add_executable(VulkanTest ${SOURCE_FILES} ${INCLUDE_FILES})
 add_dependencies(VulkanTest binaryShaders)
 
-target_link_libraries(VulkanTest ${Vulkan_LIBRARIES})
+target_link_libraries(VulkanTest PRIVATE ${Vulkan_LIBRARIES})
 
 find_package(glfw3 3.3 REQUIRED)
-target_link_libraries(VulkanTest glfw)
+target_link_libraries(VulkanTest PRIVATE glfw)
 
 find_package(glm REQUIRED)
-target_link_libraries(VulkanTest glm::glm)
+target_link_libraries(VulkanTest PRIVATE glm::glm)
 
 target_compile_features(VulkanTest PRIVATE cxx_std_20)
