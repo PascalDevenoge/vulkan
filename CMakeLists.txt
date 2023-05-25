@@ -46,3 +46,12 @@ find_package(glm REQUIRED)
 target_link_libraries(VulkanTest PRIVATE glm::glm)
 
 target_compile_features(VulkanTest PRIVATE cxx_std_20)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_compile_options(VulkanTest PRIVATE -Wall -Wextra -Wpedantic -Wno-missing-field-initializers)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  target_compile_options(VulkanTest PRIVATE /W4)
+else()
+  message(FATAL_ERROR "Unsupported compiler type")
+endif()
+
+file(COPY data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
