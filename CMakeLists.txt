@@ -35,6 +35,7 @@ endforeach()
 add_custom_target(binaryShaders ALL DEPENDS ${SPV_SHADERS})
 
 add_executable(VulkanTest ${SOURCE_FILES} ${INCLUDE_FILES})
+target_include_directories(VulkanTest PRIVATE "./external")
 add_dependencies(VulkanTest binaryShaders)
 
 target_link_libraries(VulkanTest PRIVATE ${Vulkan_LIBRARIES})
