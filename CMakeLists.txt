@@ -38,7 +38,7 @@ add_executable(VulkanTest ${SOURCE_FILES} ${INCLUDE_FILES})
 target_include_directories(VulkanTest PRIVATE "./external")
 add_dependencies(VulkanTest binaryShaders)
 
-target_link_libraries(VulkanTest PRIVATE ${Vulkan_LIBRARIES})
+target_link_libraries(VulkanTest PRIVATE Vulkan::Vulkan)
 
 find_package(glfw3 3.3 REQUIRED)
 target_link_libraries(VulkanTest PRIVATE glfw)
