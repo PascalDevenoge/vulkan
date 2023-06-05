@@ -8,8 +8,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
 
+#pragma warning(push, 0)
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
+#pragma warning(pop)
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tinyobjloader/tiny_obj_loader.h>
@@ -185,6 +187,7 @@ private:
   std::vector<VkDeviceMemory> uniformBuffersMemory;
   std::vector<void *> uniformBuffersMapped;
 
+  uint32_t mipLevels;
   VkImage textureImage;
   VkDeviceMemory textureImageMemory;
   VkImageView textureImageView;
@@ -365,7 +368,9 @@ private:
     }
   }
 
+#pragma warning(suppress : 4458)
   QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
+#pragma warning(suppress : 4458)
     QueueFamilyIndices indices;
 
     uint32_t queueFamilyCount = 0;
@@ -396,6 +401,7 @@ private:
     return indices;
   }
 
+#pragma warning(suppress : 4458)
   bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,
@@ -414,6 +420,7 @@ private:
     return requiredExtensions.empty();
   }
 
+#pragma warning(suppress : 4458)
   SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
     SwapChainSupportDetails details;
 
@@ -443,7 +450,9 @@ private:
     return details;
   }
 
+#pragma warning(suppress : 4458)
   bool isDeviceSuitable(VkPhysicalDevice device) {
+#pragma warning(suppress : 4458)
     QueueFamilyIndices indices = findQueueFamilies(device);
 
     bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -471,6 +480,7 @@ private:
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
+#pragma warning(suppress : 4458)
     for (const auto &device : devices) {
       if (isDeviceSuitable(device)) {
         physicalDevice = device;
@@ -484,6 +494,7 @@ private:
   }
 
   void createLogicalDevice() {
+#pragma warning(suppress : 4458)
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -608,6 +619,7 @@ private:
         .clipped = VK_TRUE,
         .oldSwapchain = VK_NULL_HANDLE};
 
+#pragma warning(suppress : 4458)
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
     uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(),
                                      indices.presentFamily.value()};
@@ -1367,6 +1379,10 @@ private:
     if (!pixels) {
       throw std::runtime_error("Could not load texture image from disk");
     }
+
+    mipLevels = static_cast<uint32_t>(
+                    std::floor(std::log2(std::max(texWidth, texHeight)))) +
+                1;
 
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
