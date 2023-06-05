@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.24)
 
 project(vulkan_tutorial VERSION 0.1.0 LANGUAGES CXX)
 
