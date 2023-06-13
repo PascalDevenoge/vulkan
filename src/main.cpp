@@ -16,6 +16,9 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tinyobjloader/tiny_obj_loader.h>
 
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol/sol.hpp>
+
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -1978,6 +1981,11 @@ private:
 };
 
 int main() {
+  sol::state luaState;
+  luaState.open_libraries(sol::lib::base);
+
+  luaState.script("print('Hello world')");
+
   HelloTriangleApplication app;
 
   try {

@@ -38,6 +38,12 @@ add_executable(VulkanTest ${SOURCE_FILES} ${INCLUDE_FILES})
 target_include_directories(VulkanTest PRIVATE "./external")
 add_dependencies(VulkanTest binaryShaders)
 
+find_package(Lua 5.4 REQUIRED)
+target_link_libraries(VulkanTest PRIVATE ${LUA_LIBRARIES})
+target_include_directories(VulkanTest PRIVATE ${LUA_INCLUDE_DIR})
+
+target_include_directories(VulkanTest PRIVATE "./external/sol2/include")
+
 target_link_libraries(VulkanTest PRIVATE Vulkan::Vulkan)
 
 find_package(glfw3 3.3 REQUIRED)
