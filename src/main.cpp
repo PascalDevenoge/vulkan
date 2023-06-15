@@ -343,6 +343,7 @@ private:
   }
 
   void createInstance() {
+#pragma warning(suppress : 4127)
     if (enableValidationLayers && !checkValidationLayerSupport()) {
       throw std::runtime_error("Validation layers required but not found");
     }
@@ -659,6 +660,7 @@ private:
 
   VkImageView createImageView(VkImage image, VkFormat format,
                               VkImageAspectFlags aspectFlags,
+#pragma warning(suppress : 4458)
                               uint32_t mipLevels) {
     VkImageViewCreateInfo createInfo{
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -1290,6 +1292,7 @@ private:
     }
   }
 
+#pragma warning(suppress : 4458)
   void createImage(uint32_t width, uint32_t height, uint32_t mipLevels,
                    VkSampleCountFlagBits numSamples, VkFormat format,
                    VkImageTiling tiling, VkImageUsageFlags usage,
@@ -1338,6 +1341,7 @@ private:
 
   void transitionImageLayout(VkImage image, [[maybe_unused]] VkFormat format,
                              VkImageLayout oldLayout, VkImageLayout newLayout,
+#pragma warning(suppress : 4458)
                              uint32_t mipLevels) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -1454,6 +1458,7 @@ private:
   }
 
   void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth,
+#pragma warning(suppress : 4458)
                        int32_t texHeight, uint32_t mipLevels) {
     VkFormatProperties formatProperties;
     vkGetPhysicalDeviceFormatProperties(physicalDevice, imageFormat,
