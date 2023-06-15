@@ -3,3 +3,4 @@
 VulkanTest
 shaders/*.spv
 build
+*.zip
